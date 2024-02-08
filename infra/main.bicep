@@ -67,7 +67,6 @@ module apiKeyVaultAccess 'core/security/keyvault/keyvault-access.bicep' = {
   }
 }
 
-
 // Give the User access to KeyVault
 module userKeyVaultAccess 'core/security/keyvault/keyvault-access.bicep' = {
   name: 'user-keyvault-access'
@@ -135,20 +134,9 @@ module web 'app/web.bicep' = {
   }
 }
 
-module security 'app/security.bicep' = {
-  name: 'security'
-  scope: resourceGroup
-  params: {
-    databaseAccountName: account.outputs.accountName
-    appPrincipalId: identity.outputs.principalId
-    userPrincipalId: !empty(principalId) ? principalId : null
-  }
-}
-
 // Database outputs
 output AZURE_COSMOS_ENDPOINT string = account.outputs.endpoint
-// output AZURE_COSMOS_DATABASE_NAME string = data.outputs.tables.name
-// output AZURE_COSMOS_CONTAINER_NAMES array = map(data.outputs.containers, c => c.name)
+output AZURE_COSMOS_TABLE_NAMES array = map(data.outputs.tables, c => c.name)
 
 // Container outputs
 output AZURE_CONTAINER_REGISTRY_ENDPOINT string = registry.outputs.endpoint
@@ -162,5 +150,4 @@ output AZURE_CONTAINER_ENVIRONMENT_NAME string = web.outputs.envName
 output AZURE_USER_ASSIGNED_IDENTITY_NAME string = identity.outputs.name
 
 // Security outputs
-// output AZURE_NOSQL_ROLE_DEFINITION_ID string = security.outputs.roleDefinitions.nosql
 output KEYVAULT_ENDPOINT string = kv.outputs.endpoint
