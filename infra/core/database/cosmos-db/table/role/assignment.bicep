@@ -13,13 +13,12 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
   name: targetAccountName
 }
 
-resource assignment 'Microsoft.DocumentDB/databaseAccounts/sqlRoleAssignments@2023-04-15' = {
-  name: guid(roleDefinitionId, principalId, account.id)
-  parent: account
+resource assignment 'Microsoft.Authorization/roleAssignments@2021-04-01-preview' = {
+  name: guid(subscription().id, resourceGroup().id, principalId, roleDefinitionId)
+  scope: resourceGroup()
   properties: {
+    roleDefinitionId: resourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
     principalId: principalId
-    roleDefinitionId: roleDefinitionId
-    scope: account.id
   }
 }
 

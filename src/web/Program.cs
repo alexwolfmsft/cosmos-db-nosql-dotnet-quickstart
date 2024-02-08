@@ -1,4 +1,6 @@
+using Azure.Data.Tables;
 using Azure.Identity;
+using Azure.Security.KeyVault.Secrets;
 using Microsoft.Azure.Cosmos;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,37 +9,29 @@ builder.Services.AddServerSideBlazor();
 
 if (builder.Environment.IsDevelopment())
 {
-    builder.Services.AddSingleton<CosmosClient>((_) =>
+
+    var secretClient = new SecretClient(new Uri(builder.Configuration["KEYVAULT_ENDPOINT"]), new DefaultAzureCredential());
+    var secretCosmos = await secretClient.GetSecretAsync("cosmosconnectionstring");
+    
+    builder.Services.AddSingleton<TableServiceClient>((_) =>
     {
-        // <create_client>
-        CosmosClient client = new(
-            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
-            tokenCredential: new DefaultAzureCredential()
-        );
         // </create_client>
-        return client;
+        return new TableServiceClient(secretCosmos.Value.Value);
     });
 }
 else
 {
-    builder.Services.AddSingleton<CosmosClient>((_) =>
+    var secretClient = new SecretClient(new Uri(builder.Configuration["KEYVAULT_ENDPOINT"]), new DefaultAzureCredential());
+    var secretCosmos = await secretClient.GetSecretAsync("cosmosconnectionstring");
+    
+    builder.Services.AddSingleton<TableServiceClient>((_) =>
     {
-        // <create_client_client_id>
-        CosmosClient client = new(
-            accountEndpoint: builder.Configuration["AZURE_COSMOS_DB_NOSQL_ENDPOINT"]!,
-            tokenCredential: new DefaultAzureCredential(
-                new DefaultAzureCredentialOptions()
-                {
-                    ManagedIdentityClientId = builder.Configuration["AZURE_MANAGED_IDENTITY_CLIENT_ID"]!
-                }
-            )
-        );
-        // </create_client_client_id>
-        return client;
+        // </create_client>
+        return new TableServiceClient(secretCosmos.Value.Value);
     });
 }
 
-builder.Services.AddTransient<ICosmosDbService, CosmosDbService>();
+builder.Services.AddTransient<ITableService, TableService>();
 
 var app = builder.Build();
 

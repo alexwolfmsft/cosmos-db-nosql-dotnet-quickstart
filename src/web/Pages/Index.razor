@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject ICosmosDbService cosmosDbService
+@inject ITableService tableService
 @using System.Text
 
 <pre class="bg-light text-dark fw-light font-monospace mt-5 p-2">
@@ -21,7 +21,7 @@
         </a>
         <a href="https://learn.microsoft.com/azure/cosmos-db/nosql/" class="list-group-item list-group-item-action" target="_blank">
             <i class="bi bi-lightbulb me-2"></i>
-            Learn more about Azure Cosmos DB for NoSQL
+            Learn more about Azure Cosmos DB Table
             <small class="ms-1 align-top">            
                 <i class="bi bi-box-arrow-up-right" style="font-size: 0.65rem;"></i>
             </small>
@@ -34,7 +34,7 @@
         <strong>
             ENDPOINT:
         </strong>
-        @cosmosDbService.GetEndpoint()
+        @tableService.GetEndpoint()
     </small>
 </footer>
 
@@ -54,7 +54,7 @@
 
         await WriteToConsoleAync("Current Status:\tStarting...");
 
-        await cosmosDbService.RunDemoAsync(writeOutputAync: WriteToConsoleAync);
+        await tableService.RunDemoAsync(writeOutputAync: WriteToConsoleAync);
 
         await WriteToConsoleAync("Current Status:\tStopping...");
         await SetRunAgain(true);

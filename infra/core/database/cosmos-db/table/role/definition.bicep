@@ -16,9 +16,8 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
   name: targetAccountName
 }
 
-resource definition 'Microsoft.DocumentDB/databaseAccounts/sqlRoleDefinitions@2023-04-15' = {
+resource definition 'Microsoft.Authorization/roleDefinitions@2022-05-01-preview' = {
   name: guid('nosql-role-definition', account.id)
-  parent: account
   properties: {
     assignableScopes: [
       account.id

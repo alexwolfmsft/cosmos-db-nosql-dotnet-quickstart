@@ -27,7 +27,7 @@ resource account 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = {
   name: parentAccountName
 }
 
-resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2023-04-15' = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/tables@2022-05-15' = {
   name: name
   parent: account
   tags: tags

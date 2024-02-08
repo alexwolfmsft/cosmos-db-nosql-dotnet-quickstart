@@ -9,17 +9,17 @@ EXPOSE 8081
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["web/Cosmos.Samples.NoSQL.Quickstart.Web.csproj", "web/"]
-RUN dotnet restore "./web/./Cosmos.Samples.NoSQL.Quickstart.Web.csproj"
+COPY ["web/Cosmos.Samples.Table.Quickstart.Web.csproj", "web/"]
+RUN dotnet restore "./web/./Cosmos.Samples.Table.Quickstart.Web.csproj"
 COPY . .
 WORKDIR "/src/web"
-RUN dotnet build "./Cosmos.Samples.NoSQL.Quickstart.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "./Cosmos.Samples.Table.Quickstart.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./Cosmos.Samples.NoSQL.Quickstart.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "./Cosmos.Samples.Table.Quickstart.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
-ENTRYPOINT ["dotnet", "Cosmos.Samples.NoSQL.Quickstart.Web.dll"]
+ENTRYPOINT ["dotnet", "Cosmos.Samples.Table.Quickstart.Web.dll"]

@@ -12,33 +12,39 @@ resource database 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = 
   name: databaseAccountName
 }
 
-module nosqlDefinition '../core/database/cosmos-db/nosql/role/definition.bicep' = {
-  name: 'nosql-role-definition'
-  params: {
-    targetAccountName: database.name // Existing account
-    definitionName: 'Write to Azure Cosmos DB for NoSQL data plane' // Custom role name
-    permissionsDataActions: [
-      'Microsoft.DocumentDB/databaseAccounts/readMetadata' // Read account metadata
-      'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/items/*' // Create items
-      'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers/*' // Manage items
-    ]
-  }
-}
+param roleDefId string = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
-module nosqlAppAssignment '../core/database/cosmos-db/nosql/role/assignment.bicep' = if (!empty(appPrincipalId)) {
-  name: 'nosql-role-assignment-app'
+// module tableDefinition '../core/database/cosmos-db/table/role/definition.bicep' = {
+//   name: 'table-role-definition'
+//   params: {
+//     targetAccountName: database.name // Existing account
+//     definitionName: 'Write to Azure Cosmos DB for table data plane' // Custom role name
+//     permissionsNonDataActions:[
+//     ]
+//     permissionsDataActions: [
+//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/read'
+//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/write'
+//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete'
+//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/add/action'
+//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/update/action'
+//     ]
+//   }
+// }
+
+module tableAppAssignment '../core/database/cosmos-db/table/role/assignment.bicep' = if (!empty(appPrincipalId)) {
+  name: 'table-role-assignment-app'
   params: {
     targetAccountName: database.name // Existing account
-    roleDefinitionId: nosqlDefinition.outputs.id // New role definition
+    roleDefinitionId: roleDefId // New role definition
     principalId: appPrincipalId // Principal to assign role
   }
 }
 
-module nosqlUserAssignment '../core/database/cosmos-db/nosql/role/assignment.bicep' = if (!empty(userPrincipalId)) {
-  name: 'nosql-role-assignment-user'
+module tableUserAssignment '../core/database/cosmos-db/table/role/assignment.bicep' = if (!empty(userPrincipalId)) {
+  name: 'table-role-assignment-user'
   params: {
     targetAccountName: database.name // Existing account
-    roleDefinitionId: nosqlDefinition.outputs.id // New role definition
+    roleDefinitionId: roleDefId // New role definition
     principalId: userPrincipalId ?? '' // Principal to assign role
   }
 }
@@ -52,11 +58,11 @@ module registryUserAssignment '../core/security/role/assignment.bicep' = if (!em
   }
 }
 
-output roleDefinitions object = {
-  nosql: nosqlDefinition.outputs.id
-}
+// output roleDefinitions object = {
+//   table: tableDefinition.outputs.id
+// }
 
 output roleAssignments array = union(
-  !empty(appPrincipalId) ? [ nosqlAppAssignment.outputs.id ] : [],
-  !empty(userPrincipalId) ? [ nosqlUserAssignment.outputs.id, registryUserAssignment.outputs.id ] : []
+  !empty(appPrincipalId) ? [ tableAppAssignment.outputs.id ] : [],
+  !empty(userPrincipalId) ? [ tableUserAssignment.outputs.id, registryUserAssignment.outputs.id ] : []
 )

@@ -11,16 +11,16 @@ param enableServerless bool = false
 param disableKeyBasedAuth bool = false
 
 module account '../account.bicep' = {
-  name: 'cosmos-db-nosql-account'
+  name: 'cosmos-db-table-account'
   params: {
     name: name
     location: location
     tags: tags
     kind: 'GlobalDocumentDB'
-    enableServerless: enableServerless
     disableKeyBasedAuth: disableKeyBasedAuth
   }
 }
 
 output endpoint string = account.outputs.endpoint
 output name string = account.outputs.name
+output connectionString string = account.outputs.connectionString

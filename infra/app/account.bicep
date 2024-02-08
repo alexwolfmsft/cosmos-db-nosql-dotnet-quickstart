@@ -4,7 +4,7 @@ param accountName string
 param location string = resourceGroup().location
 param tags object = {}
 
-module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
+module cosmosDbAccount '../core/database/cosmos-db/table/account.bicep' = {
   name: 'cosmos-db-account'
   params: {
     name: accountName
@@ -15,3 +15,4 @@ module cosmosDbAccount '../core/database/cosmos-db/nosql/account.bicep' = {
 
 output endpoint string = cosmosDbAccount.outputs.endpoint
 output accountName string = cosmosDbAccount.outputs.name
+output connectionString string = cosmosDbAccount.outputs.connectionString

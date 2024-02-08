@@ -5,6 +5,7 @@ param appName string
 param serviceTag string
 param location string = resourceGroup().location
 param tags object = {}
+param keyVaultEndpoint string
 
 @description('Endpoint for Azure Cosmos DB for NoSQL account.')
 param databaseAccountEndpoint string
@@ -37,22 +38,38 @@ module containerAppsApp '../core/host/container-apps/app.bicep' = {
       })
     secrets: [
       {
-        name: 'azure-cosmos-db-nosql-endpoint' // Create a uniquely-named secret
+        name: 'azure-cosmos-db-table-endpoint' // Create a uniquely-named secret
         value: databaseAccountEndpoint // NoSQL database account endpoint
       }
       {
         name: 'azure-managed-identity-client-id' // Create a uniquely-named secret
         value: userAssignedManagedIdentity.clientId // Client ID of user-assigned managed identity
       }
+      {
+        name: 'keyvault-endpoint' // Create a uniquely-named secret
+        value: keyVaultEndpoint // Client ID of user-assigned managed identity
+      }
+      {
+        name: 'azure-client-id' // Create a uniquely-named secret
+        value: userAssignedManagedIdentity.clientId // Client ID of user-assigned managed identity
+      }
     ]
     environmentVariables: [
       {
-        name: 'AZURE_COSMOS_DB_NOSQL_ENDPOINT' // Name of the environment variable referenced in the application
-        secretRef: 'azure-cosmos-db-nosql-endpoint' // Reference to secret
+        name: 'AZURE_COSMOS_DB_TABLE_ENDPOINT' // Name of the environment variable referenced in the application
+        secretRef: 'azure-cosmos-db-table-endpoint' // Reference to secret
       }
       {
         name: 'AZURE_MANAGED_IDENTITY_CLIENT_ID'
         secretRef: 'azure-managed-identity-client-id'
+      }
+      {
+        name: 'KEYVAULT_ENDPOINT'
+        secretRef: 'keyvault-endpoint'
+      }
+      {
+        name: 'AZURE_CLIENT_ID'
+        secretRef: 'azure-client-id'
       }
     ]
     targetPort: 8080
