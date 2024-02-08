@@ -14,23 +14,6 @@ resource database 'Microsoft.DocumentDB/databaseAccounts@2023-04-15' existing = 
 
 param roleDefId string = '0a9a7e1f-b9d0-4cc4-a60d-0319b160aaa3'
 
-// module tableDefinition '../core/database/cosmos-db/table/role/definition.bicep' = {
-//   name: 'table-role-definition'
-//   params: {
-//     targetAccountName: database.name // Existing account
-//     definitionName: 'Write to Azure Cosmos DB for table data plane' // Custom role name
-//     permissionsNonDataActions:[
-//     ]
-//     permissionsDataActions: [
-//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/read'
-//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/write'
-//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/delete'
-//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/add/action'
-//       'Microsoft.Storage/storageAccounts/tableServices/tables/entities/update/action'
-//     ]
-//   }
-// }
-
 module tableAppAssignment '../core/database/cosmos-db/table/role/assignment.bicep' = if (!empty(appPrincipalId)) {
   name: 'table-role-assignment-app'
   params: {
